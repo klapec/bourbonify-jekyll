@@ -51,42 +51,44 @@ gulp.task('sass', function () {
     .pipe(gulp.dest('assets/css'))
 });
 
-gulp.task('scripts', function () {
-  return gulp.src('assets/js/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter(jshintStylish))
-    .pipe(gulp.dest('_site/assets/js'))
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('assets/js'))
-});
+// THESE WERE NOT TESTED
+//
+// gulp.task('scripts', function () {
+//   return gulp.src('assets/js/**/*.js')
+//     .pipe(jshint())
+//     .pipe(jshint.reporter(jshintStylish))
+//     .pipe(gulp.dest('_site/assets/js'))
+//     .pipe(browserSync.reload({stream:true}))
+//     .pipe(gulp.dest('assets/js'))
+// });
 
-gulp.task('images', function () {
-  return gulp.src('assets/img/**/*')
-    .pipe(cache(imagemin({
-      optimizationLevel: 3,
-      progressive: true,
-      interlaced: true
-    })))
-    .pipe(gulp.dest('_site/assets/img'))
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('assets/img'))
-    .pipe(size());
-});
+// gulp.task('images', function () {
+//   return gulp.src('assets/img/**/*')
+//     .pipe(cache(imagemin({
+//       optimizationLevel: 3,
+//       progressive: true,
+//       interlaced: true
+//     })))
+//     .pipe(gulp.dest('_site/assets/img'))
+//     .pipe(browserSync.reload({stream:true}))
+//     .pipe(gulp.dest('assets/img'))
+//     .pipe(size());
+// });
 
-gulp.task('svg', function () {
-  return gulp.src('assets/svg/**/*.svg')
-    .pipe(svgmin())
-    .pipe(gulp.dest('_site/assets/svg'))
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('assets/svg'))
-});
+// gulp.task('svg', function () {
+//   return gulp.src('assets/svg/**/*.svg')
+//     .pipe(svgmin())
+//     .pipe(gulp.dest('_site/assets/svg'))
+//     .pipe(browserSync.reload({stream:true}))
+//     .pipe(gulp.dest('assets/svg'))
+// });
 
 gulp.task('watch', function () {
   gulp.watch('assets/css/**/*.scss', ['sass']);
   gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-rebuild']);
-  gulp.watch('assets/js/**/*.js', ['scripts']);
-  gulp.watch('assets/img/**/*', ['images']);
-  gulp.watch('assets/svg/**/*.svg', ['svg']);
+  // gulp.watch('assets/js/**/*.js', ['scripts']);
+  // gulp.watch('assets/img/**/*', ['images']);
+  // gulp.watch('assets/svg/**/*.svg', ['svg']);
 });
 
 gulp.task('default', ['browser-sync', 'watch']);
