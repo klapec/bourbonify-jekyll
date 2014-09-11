@@ -20,13 +20,7 @@ to
 
 ``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'})``
 
+##### SVGs
+Optimizing .svg files is currently disabled. This is due to a [bug](https://github.com/svg/svgo/issues/225) in svgo, which is used to optimize .svg files.
 
-# TODO:
-
-1. ALMOST DONE - Get rid of Bitters. Completely. That implicates adding some of its functionality to _variables.scss, _typography.scss and others.
-2. Add gulp task to clean 1-vendors folder (except for the dir file) and re-download new versions of libraries.
-3. Finish implementing 'scripts', 'images' and 'svg' gulp tasks and properly test them.
-4. Add gulp-flatten and gulp-uglify tasks.
-5. Figure out a way to have gulp-load-plugins working properly.
-6. Figure out a way to enable downloading normalize.css using bower/any-other-package-manager.
-7. Refractor the default "theme" to be more logical, semantic and so that it uses more of Bourbon and Neat.
+You can manually delete problematic AI-related entities from your .svg file and then run ``gulp images``.
