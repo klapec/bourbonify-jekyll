@@ -9,4 +9,4 @@ url: "http://yourdomain.com" # the base hostname & protocol for your site
 # Build settings
 markdown: kramdown
 
-exclude: ['node_modules', 'package.json', 'gulpfile.js', 'jekyll-starter.sublime-project', '.bowerrc', 'bower.json']
+exclude: ['node_modules', 'package.json', 'gulpfile.js', 'jekyll-bourbonify.sublime-project', '.bowerrc', 'bower.json', 'assets/css', 'assets/js', 'assets/img', 'LICENSE', 'README.md']
