@@ -1,9 +1,9 @@
 #jekyll-bourbonify
 ####WORK IN PROGRESS
 
-Simple scaffolding allowing to quickly set up Jekyll with Bourbon and Neat.
+Simple scaffolding allowing to quickly set up [Jekyll](http://jekyllrb.com) with [Bourbon](http://bourbon.io) and [Neat](http://neat.bourbon.io).
 
-Bitters is included as separate files (in assets/2-base) but it will be **soon** gone and replaced by more sensible defaults. 
+[Bitters](http://bitters.bourbon.io) is included as separate files (in assets/2-base) but it will be **soon** gone and replaced by more sensible defaults. 
 
 ##### HOW TO USE:
 1. Clone the repo, cd into it.
@@ -15,7 +15,9 @@ Bitters is included as separate files (in assets/2-base) but it will be **soon**
 ##### IF ON WINDOWS:
 Change line ~26 of gulpfile.js from:
 ``return cp.spawn('jekyll', ['build'], {stdio: 'inherit'})``
+
 to
+
 ``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'})``
 
 
