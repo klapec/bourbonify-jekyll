@@ -18,7 +18,7 @@ gulp.task('jekyll-rebuild', ['jekyll-build'], function () {
   browserSync.reload();
 });
 
-gulp.task('browser-sync', ['jekyll-build', 'sass', 'scripts'], function() {
+gulp.task('browser-sync', ['jekyll-build', 'sass', 'scripts', 'images'], function() {
   browserSync({
     server: {
       baseDir: '_site'
@@ -69,25 +69,28 @@ gulp.task('scripts-rebuild', function () {
     .pipe(browserSync.reload({stream:true}));
 });
 
-// NOT TESTED
-// gulp.task('images', function () {
-//   return gulp.src('assets/img/**/*')
-//     .pipe($.cache($.imagemin({
-//       optimizationLevel: 3,
-//       progressive: true,
-//       interlaced: true
-//     })))
-//     .pipe(gulp.dest('_site/assets/img'))
-//     .pipe(browserSync.reload({stream:true}))
-//     .pipe(gulp.dest('assets/img'))
-//     .pipe($.size());
-// });
+// Due to a bug (https://github.com/svg/svgo/issues/225) in svgo, which is used to optimize .svg files,
+// .svg files are excluded from being optimized here. You can manually delete problematic AI-related entities
+// from your .svg file and then run 'gulp images'.
+
+gulp.task('images', function () {
+  return gulp.src('assets/img/**/*')
+    .pipe($.size())
+    .pipe($.cache($.imagemin({
+      optimizationLevel: 1,
+      progressive: true,
+      interlaced: true
+    })))
+    .pipe(gulp.dest('_site/assets/img'))
+    .pipe(browserSync.reload({stream:true}))
+    .pipe($.size());
+});
 
 gulp.task('watch', function () {
   gulp.watch('assets/css/**/*.scss', ['sass']);
   gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-rebuild']);
   gulp.watch('assets/js/*.js', ['scripts-rebuild']);
-  // gulp.watch('assets/img/**/*', ['images']);
+  gulp.watch('assets/img/**/*', ['images']);
 });
 
 gulp.task('default', ['browser-sync', 'watch']);
