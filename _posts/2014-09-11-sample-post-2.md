@@ -1,7 +1,7 @@
 ---
-layout: default
+layout: post
 title: "Sample post #2"
-date:   2014-09-10 22:33:45
+date:   2014-09-11 12:08:45
 published: True
 categories: []
 tags: []
