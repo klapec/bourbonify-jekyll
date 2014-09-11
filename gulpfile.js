@@ -1,18 +1,7 @@
-var gulp           = require('gulp');
-var cp             = require('child_process');
-var browserSync    = require('browser-sync');
-var rubySass       = require('gulp-ruby-sass');
-var autoprefixer   = require('gulp-autoprefixer');
-var minifyCss      = require('gulp-minify-css');
-var jshint         = require('gulp-jshint');
-var jshintStylish  = require('jshint-stylish');
-var cache          = require('gulp-cache');
-var imagemin       = require('gulp-imagemin');
-var size           = require('gulp-size');
-var svgmin         = require('gulp-svgmin');
-var flatten        = require('gulp-flatten');
-var uglify         = require('gulp-uglify');
-
+var gulp = require('gulp');
+var cp = require('child_process');
+var browserSync = require('browser-sync');
+var $ = require('gulp-load-plugins')();
 
 var messages = {
     jekyllBuild: '<span style="color: grey">Running:</span> $ jekyll build'
@@ -38,25 +27,25 @@ gulp.task('browser-sync', ['sass', 'jekyll-build'], function() {
 
 gulp.task('sass', function () {
   return gulp.src('assets/css/main.scss')
-    .pipe(rubySass({
+    .pipe($.rubySass({
       style: 'expanded',
       precision: 3
     }))
-    .pipe(autoprefixer({
+    .pipe($.autoprefixer({
       browsers: ['last 2 versions']
     }))
-    .pipe(minifyCss())
+    .pipe($.minifyCss())
     .pipe(gulp.dest('_site/assets/css'))
     .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('assets/css'))
+    .pipe(gulp.dest('assets/css'));
 });
 
 // THESE WERE NOT TESTED
 //
 // gulp.task('scripts', function () {
 //   return gulp.src('assets/js/**/*.js')
-//     .pipe(jshint())
-//     .pipe(jshint.reporter(jshintStylish))
+//     .pipe($.jshint())
+//     .pipe($.jshint.reporter(jshintStylish))
 //     .pipe(gulp.dest('_site/assets/js'))
 //     .pipe(browserSync.reload({stream:true}))
 //     .pipe(gulp.dest('assets/js'))
@@ -64,7 +53,7 @@ gulp.task('sass', function () {
 
 // gulp.task('images', function () {
 //   return gulp.src('assets/img/**/*')
-//     .pipe(cache(imagemin({
+//     .pipe($.cache($.imagemin({
 //       optimizationLevel: 3,
 //       progressive: true,
 //       interlaced: true
@@ -72,12 +61,12 @@ gulp.task('sass', function () {
 //     .pipe(gulp.dest('_site/assets/img'))
 //     .pipe(browserSync.reload({stream:true}))
 //     .pipe(gulp.dest('assets/img'))
-//     .pipe(size());
+//     .pipe($.size());
 // });
 
 // gulp.task('svg', function () {
 //   return gulp.src('assets/svg/**/*.svg')
-//     .pipe(svgmin())
+//     .pipe($.svgmin())
 //     .pipe(gulp.dest('_site/assets/svg'))
 //     .pipe(browserSync.reload({stream:true}))
 //     .pipe(gulp.dest('assets/svg'))
