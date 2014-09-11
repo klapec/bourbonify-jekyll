@@ -74,7 +74,7 @@ gulp.task('scripts-rebuild', function () {
 // from your .svg file and then run 'gulp images'.
 
 gulp.task('images', function () {
-  return gulp.src('assets/img/**/*')
+  return gulp.src(['assets/img/**/*', '!*.svg'])
     .pipe($.size())
     .pipe($.cache($.imagemin({
       optimizationLevel: 1,
