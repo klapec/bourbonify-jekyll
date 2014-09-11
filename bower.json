@@ -1,0 +1,9 @@
+{
+  "name": "jekyll-bourbonify",
+  "version": "0.1.0",
+  "description": "Simple scaffolding allowing to quickly set up Jekyll with Bourbon and Neat.",
+  "dependencies": {
+    "bourbon": "~4.0.2",
+    "neat": "~1.6.0"
+  }
+}

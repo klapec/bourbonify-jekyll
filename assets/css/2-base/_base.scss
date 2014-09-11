@@ -1,0 +1,85 @@
+// TODO: WHAT THE FUCK IS THIS?!
+
+body {
+  background-color: $base-background-color;
+}
+
+h1, h2, h3, h4, h5, h6,
+p, blockquote, pre,
+ul, ol, dl, figure,
+%vertical-rhythm {
+  margin-bottom: $gutter / 2;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+figure > img {
+  display: block;
+}
+
+ul, ol {
+  margin-left: $gutter;
+}
+
+li {
+  > ul,
+  > ol {
+     margin-bottom: 0;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+}
+
+a {
+  color: $base-accent-color;
+  text-decoration: none;
+
+  &:visited {
+    color: darken($base-accent-color, 15%);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+blockquote {
+  color: $medium-gray;
+  border-left: 4px solid $medium-gray;
+  padding-left: $gutter / 2;
+  font-size: 18px;
+  letter-spacing: -1px;
+  font-style: italic;
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+pre,
+code {
+  font-size: 15px;
+  border: 1px solid $light-gray;
+  border-radius: 3px;
+  background-color: #eef;
+}
+
+code {
+  padding: 1px 5px;
+}
+
+pre {
+  padding: 8px 12px;
+  overflow-x: scroll;
+
+  > code {
+    border: 0;
+    padding-right: 0;
+    padding-left: 0;
+  }
+}

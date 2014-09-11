@@ -1,0 +1,13 @@
+.wrapper {
+  @include outer-container;
+  border-top: 5px solid $dark-gray;
+  padding: 1em;
+}
+
+.page-content {
+  margin-top: $gutter;
+
+  h1 {
+    line-height: 1em;
+  }
+}

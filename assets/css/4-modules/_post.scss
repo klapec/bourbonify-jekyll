@@ -1,0 +1,36 @@
+.post-header {
+  margin-bottom: $gutter;
+}
+
+.post-title {
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.post-content {
+  margin-bottom: $gutter;
+
+  h2 {
+    font-size: 32px;
+
+    @include media(max-width 800px) {
+      font-size: 28px;
+    }
+  }
+
+  h3 {
+    font-size: 26px;
+
+    @include media(max-width 800px) {
+      font-size: 22px;
+    }
+  }
+
+  h4 {
+    font-size: 20px;
+
+    @include media(max-width 800px) {
+      font-size: 18px;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+.post-list {
+  margin-left: 0;
+  list-style: none;
+
+  > li {
+    margin-bottom: $gutter;
+  }
+}
+
+.post-meta {
+  font-size: $base-font-size * .75;
+  color: $medium-gray;
+}
+
+.post-link {
+  display: block;
+  font-size: 24px;
+}
