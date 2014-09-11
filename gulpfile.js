@@ -55,8 +55,8 @@ gulp.task('scripts', function () {
     .pipe($.concat('main.js'))
     .pipe($.uglify())
     .pipe(custom.restore())
-    .pipe(gulp.dest('_site/assets/js'))
-    .pipe(browserSync.reload({stream:true}));
+    .pipe(browserSync.reload({stream:true}))
+    .pipe(gulp.dest('_site/assets/js'));
 });
 
 gulp.task('scripts-rebuild', function () {
@@ -65,8 +65,8 @@ gulp.task('scripts-rebuild', function () {
     .pipe($.jshint.reporter('jshint-stylish'))
     .pipe($.concat('main.js'))
     .pipe($.uglify())
-    .pipe(gulp.dest('_site/assets/js'))
-    .pipe(browserSync.reload({stream:true}));
+    .pipe(browserSync.reload({stream:true}))
+    .pipe(gulp.dest('_site/assets/js'));
 });
 
 // Due to a bug (https://github.com/svg/svgo/issues/225) in svgo, which is used to optimize .svg files,
@@ -81,8 +81,8 @@ gulp.task('images', function () {
       progressive: true,
       interlaced: true
     })))
-    .pipe(gulp.dest('_site/assets/img'))
     .pipe(browserSync.reload({stream:true}))
+    .pipe(gulp.dest('_site/assets/img'))
     .pipe($.size());
 });
 
@@ -93,4 +93,6 @@ gulp.task('watch', function () {
   gulp.watch('assets/img/**/*', ['images']);
 });
 
-gulp.task('default', ['browser-sync', 'watch']);
+gulp.task('default', ['browser-sync'], function () {
+  gulp.start('watch');
+});
