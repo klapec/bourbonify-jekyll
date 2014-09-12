@@ -32,6 +32,9 @@ gulp.task('browser-sync', ['jekyll-build', 'sass', 'scripts', 'images'], functio
 
 // Compiles scss files into one main.css, autoprefixes, minifies and moves it into _site
 // and then reloads the browser
+// Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34
+// and because of https://github.com/sindresorhus/gulp-ruby-sass/issues/127 there's no way to
+// disable generating them
 gulp.task('sass', ['jekyll-build'], function () {
   return gulp.src('assets/css/main.scss')
     .pipe($.rubySass({
