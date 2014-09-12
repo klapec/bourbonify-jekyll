@@ -29,3 +29,6 @@ You can manually delete problematic AI-related entities from your .svg file, cha
 Sass source maps do not work as of now, due to https://github.com/jonathanepollack/gulp-minify-css/issues/34. 
 
 There's also no working option to have them disabled - https://github.com/sindresorhus/gulp-ruby-sass/issues/127.
+
+#### jQuery
+jQuery support added. If you want to use it in your project, uncomment line #13 in _layouts/default.html file.

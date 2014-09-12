@@ -70,7 +70,7 @@ gulp.task('sass-rebuild', function () {
 // validates your js scripts, compiles them all into one and uglifies them
 // and puts all the js files into _site
 gulp.task('scripts', ['jekyll-build'], function () {
-  var vendor = $.filter('vendor/*.js');
+  var vendor = $.filter('vendor/**/*.js');
   var custom = $.filter(['*.js', '!vendor.js']);
 
   return gulp.src('assets/js/**/*.js')
@@ -104,7 +104,8 @@ gulp.task('scripts-rebuild', function () {
 // Reloads the browser as well!
 // Due to a limitation (https://github.com/svg/svgo/issues/225) in sax-js, which is used by svgo to optimize .svg files,
 // .svg files are excluded from being optimized here. You can manually delete problematic AI-related entities
-// from your .svg file, change line 106 to  `` return gulp.src('assets/img/**/*') `` and then run `` gulp images ``.
+// from your .svg file, change the third line below to  `` return gulp.src('assets/img/**/*') `` 
+// and then run `` gulp images ``.
 gulp.task('images', ['jekyll-build'], function () {
   return gulp.src(['assets/img/**/*', '!*.svg'])
     .pipe($.size({
@@ -149,23 +150,28 @@ gulp.task('images-rebuild', function () {
 // like Bourbon or jQuery
 // useful when updating or reinstalling them
 gulp.task('clean', function () {
-  return gulp.src(['_site/assets/css/*', '_site/assets/js/*', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/js/vendor/*.js', 'bower_components'], { read: false })
+  return gulp.src(['_site/assets/css/*', '_site/assets/js/*', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/js/vendor/*', 'bower_components'], { read: false })
     .pipe($.rimraf());
 });
 
-// Downloads dependencies listed in bower.json (Normalize, Bourbon and Neat)
+// Downloads dependencies listed in bower.json (Normalize, Bourbon, Neat and jQuery)
 gulp.task('downloadDeps', function () {
   var stream = gulp.src('bower.json')
     .pipe($.install());
     return stream;
 });
 
-// Moves Normalize, Bourbon and Neat to the correct path
-// Supports css-orientated assets, requires adding relevant path to _1-dir.scss
-// if you add any other package
+// Moves Normalize, Bourbon, Neat and jQuery to the correct path
 gulp.task('installDeps', ['downloadDeps'] ,function () {
+  var cssStack = $.filter(['bourbon/**/*', 'neat/**/*', 'normalize.css/**/*']);
+  var jquery = $.filter('jquery/dist/jquery.js');
   var stream = gulp.src('bower_components/**/*')
-    .pipe(gulp.dest('assets/css/1-vendor/'));
+    .pipe(cssStack)
+    .pipe(gulp.dest('assets/css/1-vendor'))
+    .pipe(cssStack.restore())
+    .pipe(jquery)
+    .pipe(gulp.dest('assets/js/vendor'))
+    .pipe(jquery.restore());
     return stream;
 });
 
