@@ -1,5 +1,5 @@
 #jekyll-bourbonify
-##WORK IN PROGRESS
+###WORK IN PROGRESS
 
 Simple scaffolding allowing to quickly set up [Jekyll](http://jekyllrb.com) with [Normalize](http://necolas.github.io/normalize.css/), [Bourbon](http://bourbon.io) and [Neat](http://neat.bourbon.io).
 
@@ -12,15 +12,13 @@ Simple scaffolding allowing to quickly set up [Jekyll](http://jekyllrb.com) with
 4. Run ``gulp build`` to start building jekyll files and all the assets, new browser tab will open automatically with your new jekyll site. You can now edit your project and that tab will automatically refresh on save!
 5. You can close your local development environment by CTRL-C and if you want to start it again - use ``gulp`` command.
 
-###Extremely WORK-IN-PROGRESS, beware of bugs!
-
 #### IF ON WINDOWS:
-Change line ~26 of gulpfile.js from:
-``return cp.spawn('jekyll', ['build'], {stdio: 'inherit'})``
+Change line 15 of gulpfile.js from:
+``return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);``
 
 to
 
-``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'})``
+``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'}).on('close', done);``
 
 #### SVGs
 Optimizing .svg files is currently disabled. This is due to a [limitation](https://github.com/svg/svgo/issues/225) of sax-js, which is used by svgo to optimize .svg files.
@@ -28,4 +26,6 @@ Optimizing .svg files is currently disabled. This is due to a [limitation](https
 You can manually delete problematic AI-related entities from your .svg file, change line 106 of gulpfile.js to ``return gulp.src('assets/img/**/*')`` and then run ``gulp images-rebuild``.
 
 #### Sass source maps
-Sass source maps do not work as of now, due to (https://github.com/jonathanepollack/gulp-minify-css/issues/34). There's also no working option to have them disabled - (https://github.com/sindresorhus/gulp-ruby-sass/issues/127)
+Sass source maps do not work as of now, due to https://github.com/jonathanepollack/gulp-minify-css/issues/34. 
+
+There's also no working option to have them disabled - https://github.com/sindresorhus/gulp-ruby-sass/issues/127.
