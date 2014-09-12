@@ -1,7 +1,7 @@
 # Site settings
 title: "jekyll-bourbonify"
 email: your-email@domain.com
-description: "Simple scaffolding allowing to quickly set up Jekyll with Bourbon and Neat."
+description: "Simple scaffolding allowing to quickly set up Jekyll with Normalize, Bourbon and Neat."
 
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://yourdomain.com" # the base hostname & protocol for your site
@@ -9,4 +9,4 @@ url: "http://yourdomain.com" # the base hostname & protocol for your site
 # Build settings
 markdown: kramdown
 
-exclude: ['node_modules', 'package.json', 'gulpfile.js', 'jekyll-bourbonify.sublime-project', 'jekyll-bourbonify.sublime-workspace', '.bowerrc', 'bower.json', 'assets/css', 'assets/js', 'assets/img', 'LICENSE', 'README.md']
+exclude: ['node_modules', 'package.json', 'gulpfile.js', 'jekyll-bourbonify.sublime-project', 'jekyll-bourbonify.sublime-workspace', '.bowerrc', 'bower.json', 'assets/css', 'assets/js', 'assets/img', 'LICENSE', 'README.md', 'bower_components']

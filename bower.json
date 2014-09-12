@@ -1,8 +1,13 @@
 {
   "name": "jekyll-bourbonify",
-  "version": "0.1.0",
-  "description": "Simple scaffolding allowing to quickly set up Jekyll with Bourbon and Neat.",
+  "version": "0.2.0",
+  "authors": "Andrzej Kłapeć",
+  "description": "Simple scaffolding allowing to quickly set up Jekyll with Normalize, Bourbon and Neat.",
+  "license": "MIT",
+  "homepage": "http://github.com/klapec/jekyll-bourbonify",
+  "private": true,
   "dependencies": {
+    "normalize.css": "~3.0.1",
     "bourbon": "~4.0.2",
     "neat": "~1.6.0"
   }

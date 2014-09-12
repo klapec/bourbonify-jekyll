@@ -1,9 +1,6 @@
+.sass-cache
 _site
 node_modules
-assets/css/1-vendor/bourbon
-assets/css/1-vendor/neat
-assets/css/main.css
-assets/css/main.map.css
-.sass-cache
+bower_components
 jekyll-bourbonify.sublime-project
 jekyll-bourbonify.sublime-workspace
