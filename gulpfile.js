@@ -25,6 +25,13 @@ gulp.task('browser-sync', ['jekyll-build', 'htmlMinify', 'sass', 'scripts', 'ima
   });
 });
 
+// Minifies .html files in _site
+gulp.task('htmlMinify', ['jekyll-build'], function() {
+  gulp.src('_site/**/*.html')
+    .pipe($.htmlmin({collapseWhitespace: true}))
+    .pipe(gulp.dest('_site/'));
+});
+
 // Compiles scss files into one main.css, autoprefixes, minifies and moves it into _site
 // and then reloads the browser
 // Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34.
@@ -45,7 +52,6 @@ gulp.task('sass', ['jekyll-build'], function() {
     .pipe(gulp.dest('_site/assets/css'));
 });
 
-
 // Rebuilds sass during the watch task
 // without the need of building whole jekyll
 gulp.task('sass-rebuild', function() {
@@ -60,13 +66,6 @@ gulp.task('sass-rebuild', function() {
     .pipe($.minifyCss())
     .pipe(browserSync.reload({stream:true}))
     .pipe(gulp.dest('_site/assets/css'));
-});
-
-// Minifies .html files in _site
-gulp.task('htmlMinify', ['jekyll-build'], function() {
-  gulp.src('_site/**/*.html')
-    .pipe($.htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest('_site/'));
 });
 
 // Compiles all vendor js into one file, uglifies (minifies) it,
