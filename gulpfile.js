@@ -189,7 +189,7 @@ gulp.task('fixNormalize', ['installDeps'], function () {
 // and runs relevant task
 gulp.task('watch', function () {
   gulp.watch('assets/css/**/*.scss', ['sass-rebuild']);
-  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-rebuild']);
+  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-build', 'sass', 'scripts', 'images']);
   gulp.watch('assets/js/*.js', ['scripts-rebuild']);
   gulp.watch('assets/img/**/*', ['images-rebuild']);
 });
