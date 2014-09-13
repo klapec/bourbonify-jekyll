@@ -13,10 +13,7 @@ Simple scaffolding allowing to quickly set up [Jekyll](http://jekyllrb.com) with
 5. You can close your local development environment by CTRL-C and if you want to start it again - use ``gulp`` command.
 
 #### IF ON WINDOWS:
-Change line 15 of gulpfile.js from:
-``return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);``
-
-to
+Change line 10 of gulpfile.js to:
 
 ``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'}).on('close', done);``
 
@@ -31,4 +28,4 @@ Sass source maps do not work as of now, due to https://github.com/jonathanepolla
 There's also no working option to have them disabled - https://github.com/sindresorhus/gulp-ruby-sass/issues/127.
 
 #### jQuery
-jQuery support added. If you want to use it in your project, uncomment line #13 in _layouts/default.html file.
+jQuery support added. If you want to use it in your project, uncomment relevant line in _layouts/default.html file.

@@ -4,25 +4,20 @@ var browserSync = require('browser-sync');
 var jshintStylish = require('jshint-stylish');
 var $ = require('gulp-load-plugins')();
 
-var messages = {
-    jekyllBuild: '<span style="color: grey">Running:</span> $ jekyll build'
-};
-
 // Runs ``$ jekyll build``, i.e. compiles all the includes, layouts, posts etc into
 // a working, static site (in _site)
-gulp.task('jekyll-build', function (done) {
-    var stream = browserSync.notify(messages.jekyllBuild);
-    return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
+gulp.task('jekyll-build', function(done) {
+  return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
 });
 
 // Rebuilds jekyll, fired up upon detecting any changes in relevant files
-gulp.task('jekyll-rebuild', ['jekyll-build'], function () {
+gulp.task('jekyll-rebuild', ['jekyll-build'], function() {
   browserSync.reload();
 });
 
 // First half of the 'default' task, builds jekyll, sass, scripts, images
 // and sets up a working local server for a livereload-like environment
-gulp.task('browser-sync', ['jekyll-build', 'sass', 'scripts', 'images'], function() {
+gulp.task('browser-sync', ['jekyll-build', 'htmlMinify', 'sass', 'scripts', 'images'], function() {
   browserSync({
     server: {
       baseDir: '_site'
@@ -32,10 +27,11 @@ gulp.task('browser-sync', ['jekyll-build', 'sass', 'scripts', 'images'], functio
 
 // Compiles scss files into one main.css, autoprefixes, minifies and moves it into _site
 // and then reloads the browser
-// Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34
-// and because of https://github.com/sindresorhus/gulp-ruby-sass/issues/127 there's no way to
-// disable generating them
-gulp.task('sass', ['jekyll-build'], function () {
+// Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34.
+// New version of gulp-ruby-sass containing an option for disabling sourcemaps generation 
+// https://github.com/sindresorhus/gulp-ruby-sass/commit/a578544f31f40fbda7964648dccb14d2b6ddf01e
+// hasn't been yet released
+gulp.task('sass', ['jekyll-build'], function() {
   return gulp.src('assets/css/main.scss')
     .pipe($.rubySass({
       style: 'expanded',
@@ -50,9 +46,9 @@ gulp.task('sass', ['jekyll-build'], function () {
 });
 
 
-// Temporary solution, used for rebuilding sass during the watch task
+// Rebuilds sass during the watch task
 // without the need of building whole jekyll
-gulp.task('sass-rebuild', function () {
+gulp.task('sass-rebuild', function() {
   return gulp.src('assets/css/main.scss')
     .pipe($.rubySass({
       style: 'expanded',
@@ -64,12 +60,19 @@ gulp.task('sass-rebuild', function () {
     .pipe($.minifyCss())
     .pipe(browserSync.reload({stream:true}))
     .pipe(gulp.dest('_site/assets/css'));
+});
+
+// Minifies .html files in _site
+gulp.task('htmlMinify', ['jekyll-build'], function() {
+  gulp.src('_site/**/*.html')
+    .pipe($.htmlmin({collapseWhitespace: true}))
+    .pipe(gulp.dest('_site/'));
 });
 
 // Compiles all vendor js into one file, uglifies (minifies) it,
 // validates your js scripts, compiles them all into one and uglifies them
 // and puts all the js files into _site
-gulp.task('scripts', ['jekyll-build'], function () {
+gulp.task('scripts', ['jekyll-build'], function() {
   var vendor = $.filter('vendor/**/*.js');
   var custom = $.filter(['*.js', '!vendor.js']);
 
@@ -90,7 +93,7 @@ gulp.task('scripts', ['jekyll-build'], function () {
 
 // Validates your js scripts, compiles them all into one and uglifies them,
 // puts them into _site and reloads the browser every time you make any changes
-gulp.task('scripts-rebuild', function () {
+gulp.task('scripts-rebuild', function() {
   return gulp.src('assets/js/*.js')
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
@@ -105,8 +108,7 @@ gulp.task('scripts-rebuild', function () {
 // Due to a limitation (https://github.com/svg/svgo/issues/225) in sax-js, which is used by svgo to optimize .svg files,
 // .svg files are excluded from being optimized here. You can manually delete problematic AI-related entities
 // from your .svg file, change the third line below to  `` return gulp.src('assets/img/**/*') `` 
-// and then run `` gulp images ``.
-gulp.task('images', ['jekyll-build'], function () {
+gulp.task('images', ['jekyll-build'], function() {
   return gulp.src(['assets/img/**/*', '!*.svg'])
     .pipe($.size({
       showFiles: true,
@@ -125,9 +127,9 @@ gulp.task('images', ['jekyll-build'], function () {
     }));
 });
 
-// Temporary solution, used for optimizing any new/changed images during the watch task
+// Used for optimizing any new/changed images during the watch task
 // without the need of building whole jekyll
-gulp.task('images-rebuild', function () {
+gulp.task('images-rebuild', function() {
   return gulp.src(['assets/img/**/*', '!*.svg'])
     .pipe($.size({
       showFiles: true,
@@ -147,22 +149,21 @@ gulp.task('images-rebuild', function () {
 });
 
 // Cleans folders which contain assets provided by external libraries
-// like Bourbon or jQuery
-// useful when updating or reinstalling them
-gulp.task('clean', function () {
-  return gulp.src(['_site/assets/css/*', '_site/assets/js/*', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/js/vendor/*', 'bower_components'], { read: false })
+// and the _site folder that is generated by jekyll
+gulp.task('clean', function() {
+  return gulp.src(['_site/*', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/js/vendor/*', 'bower_components'], { read: false })
     .pipe($.rimraf());
 });
 
 // Downloads dependencies listed in bower.json (Normalize, Bourbon, Neat and jQuery)
-gulp.task('downloadDeps', function () {
+gulp.task('downloadDeps', function() {
   var stream = gulp.src('bower.json')
     .pipe($.install());
     return stream;
 });
 
 // Moves Normalize, Bourbon, Neat and jQuery to the correct path
-gulp.task('installDeps', ['downloadDeps'] ,function () {
+gulp.task('installDeps', ['downloadDeps'] ,function() {
   var cssStack = $.filter(['bourbon/**/*', 'neat/**/*', 'normalize.css/**/*']);
   var jquery = $.filter('jquery/dist/jquery.js');
   var stream = gulp.src('bower_components/**/*')
@@ -175,10 +176,10 @@ gulp.task('installDeps', ['downloadDeps'] ,function () {
     return stream;
 });
 
-// As of Sep 11th 2014, Sass doesn't support importing css as sass files
+// Sass doesn't yet support importing css as sass files
 // https://github.com/sass/sass/issues/556
 // This task is needed for normalize to be properly imported into our project
-gulp.task('fixNormalize', ['installDeps'], function () {
+gulp.task('fixNormalize', ['installDeps'], function() {
   var stream = gulp.src(['assets/css/1-vendor/normalize.css/normalize.css'])
     .pipe($.rename('_normalize.scss'))
     .pipe(gulp.dest('assets/css/1-vendor/normalize.css'));
@@ -187,22 +188,21 @@ gulp.task('fixNormalize', ['installDeps'], function () {
 
 // Watches for any changes in the html/markdown/scss/js files and images
 // and runs relevant task
-gulp.task('watch', function () {
+gulp.task('watch', function() {
   gulp.watch('assets/css/**/*.scss', ['sass-rebuild']);
-  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-build', 'sass', 'scripts', 'images']);
+  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-build', 'htmlMinify', 'sass', 'scripts', 'images']);
   gulp.watch('assets/js/*.js', ['scripts-rebuild']);
   gulp.watch('assets/img/**/*', ['images-rebuild']);
 });
 
 // Task indended to use for the first time after cloning the repo
 // Downloads and installs required assets and runs the 'default' task
-gulp.task('build', ['downloadDeps', 'installDeps', 'fixNormalize'], function () {
+gulp.task('build', ['downloadDeps', 'installDeps', 'fixNormalize'], function() {
   gulp.start('default');
 });
 
-// Default task (i.e. what happens when you run ``gulp``)
 // Builds jekyll, sass, scripts, images, sets up a working local server for a livereload-like environment
 // and watches for changes
-gulp.task('default', ['browser-sync'], function () {
+gulp.task('default', ['browser-sync'], function() {
   gulp.start('watch');
 });
