@@ -2,7 +2,7 @@
   "name": "jekyll-bourbonify",
   "version": "0.2.0",
   "authors": "Andrzej Kłapeć",
-  "description": "Simple scaffolding allowing to quickly set up Jekyll with Normalize, Bourbon and Neat.",
+  "description": "Simple boilerplate allowing to quickly set up Jekyll with Normalize, Bourbon and Neat.",
   "license": "MIT",
   "homepage": "http://github.com/klapec/jekyll-bourbonify",
   "private": true,
