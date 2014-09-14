@@ -25,11 +25,11 @@ By default there are included:
 1. Make sure you have ``git``, ``nodejs``, ``npm`` and ``bower`` installed,
 2. Clone the repo (``git clone https://github.com/klapec/jekyll-bourbonify.git`` or using a GUI git client) and ``cd`` into it,
 3. Run ``npm install``,
-4. First time after cloning the repo you need to run ``gulp build`` to build jekyll files, download and install all the assets and after that a new browser tab will open automatically with your new jekyll site. You can now edit your project and that tab will automatically refresh on save!
-5. Use ``gulp`` every time you want to start the local development environment.
+4. First time after cloning the repo you need to run ``gulp build`` to download and install all the assets and build jekyll.
+5. Use ``gulp watch`` every time you want to start the local development environment.
 
 #### IF ON WINDOWS:
-Change line 42 of gulpfile.js to:
+Change lines 42 and 127 of gulpfile.js to:
 
 ``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'}).on('close', done);``
 
