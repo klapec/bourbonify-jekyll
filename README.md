@@ -29,7 +29,7 @@ By default there are included:
 5. Use ``gulp`` every time you want to start the local development environment.
 
 #### IF ON WINDOWS:
-Change line 10 of gulpfile.js to:
+Change line 42 of gulpfile.js to:
 
 ``return cp.exec('jekyll.bat', ['build'], {stdio: 'inherit'}).on('close', done);``
 
