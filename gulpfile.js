@@ -2,167 +2,18 @@ var gulp = require('gulp');
 var cp = require('child_process');
 var browserSync = require('browser-sync');
 var jshintStylish = require('jshint-stylish');
+var merge = require('merge-stream');
 var $ = require('gulp-load-plugins')();
 
-// Runs ``$ jekyll build``, i.e. compiles all the includes, layouts, posts etc into
-// a working, static site (in _site)
-gulp.task('jekyll-build', function(done) {
-  return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
-});
+gulp.task('deps', ['depsDownload', 'depsInstall', 'depsFix'], function() {});
 
-// Rebuilds jekyll, fired up upon detecting any changes in relevant files
-gulp.task('jekyll-rebuild', ['jekyll-build'], function() {
-  browserSync.reload();
-});
-
-// First half of the 'default' task, builds jekyll, sass, scripts, images
-// and sets up a working local server for a livereload-like environment
-gulp.task('browser-sync', ['jekyll-build', 'htmlMinify', 'sass', 'scripts', 'images'], function() {
-  browserSync({
-    server: {
-      baseDir: '_site'
-    }
-  });
-});
-
-// Minifies .html files in _site
-gulp.task('htmlMinify', ['jekyll-build'], function() {
-  gulp.src('_site/**/*.html')
-    .pipe($.htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest('_site/'));
-});
-
-// Compiles scss files into one main.css, autoprefixes, minifies and moves it into _site
-// and then reloads the browser
-// Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34.
-// New version of gulp-ruby-sass containing an option for disabling sourcemaps generation 
-// https://github.com/sindresorhus/gulp-ruby-sass/commit/a578544f31f40fbda7964648dccb14d2b6ddf01e
-// hasn't been yet released
-gulp.task('sass', ['jekyll-build'], function() {
-  return gulp.src('assets/css/main.scss')
-    .pipe($.rubySass({
-      style: 'expanded',
-      precision: 3
-    }))
-    .pipe($.autoprefixer({
-      browsers: ['last 2 versions']
-    }))
-    .pipe($.minifyCss())
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('_site/assets/css'));
-});
-
-// Rebuilds sass during the watch task
-// without the need of building whole jekyll
-gulp.task('sass-rebuild', function() {
-  return gulp.src('assets/css/main.scss')
-    .pipe($.rubySass({
-      style: 'expanded',
-      precision: 3
-    }))
-    .pipe($.autoprefixer({
-      browsers: ['last 2 versions']
-    }))
-    .pipe($.minifyCss())
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('_site/assets/css'));
-});
-
-// Compiles all vendor js into one file, uglifies (minifies) it,
-// validates your js scripts, compiles them all into one and uglifies them
-// and puts all the js files into _site
-gulp.task('scripts', ['jekyll-build'], function() {
-  var vendor = $.filter('vendor/**/*.js');
-  var custom = $.filter(['*.js', '!vendor.js']);
-
-  return gulp.src('assets/js/**/*.js')
-    .pipe(vendor)
-    .pipe($.concat('vendor.js'))
-    .pipe($.uglify())
-    .pipe(vendor.restore())
-    .pipe(custom)
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.concat('main.js'))
-    .pipe($.uglify())
-    .pipe(custom.restore())
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('_site/assets/js'));
-});
-
-// Validates your js scripts, compiles them all into one and uglifies them,
-// puts them into _site and reloads the browser every time you make any changes
-gulp.task('scripts-rebuild', function() {
-  return gulp.src('assets/js/*.js')
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.concat('main.js'))
-    .pipe($.uglify())
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('_site/assets/js'));
-});
-
-// Optimizes any jpg/png/gif images and moves them to _site.
-// Reloads the browser as well!
-// Due to a limitation (https://github.com/svg/svgo/issues/225) in sax-js, which is used by svgo to optimize .svg files,
-// .svg files are excluded from being optimized here. You can manually delete problematic AI-related entities
-// from your .svg file, change the third line below to  `` return gulp.src('assets/img/**/*') `` 
-gulp.task('images', ['jekyll-build'], function() {
-  return gulp.src(['assets/img/**/*', '!*.svg'])
-    .pipe($.size({
-      showFiles: true,
-      title: "Images size before optimizing:"
-    }))
-    .pipe($.cache($.imagemin({
-      optimizationLevel: 1,
-      progressive: true,
-      interlaced: true
-    })))
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('_site/assets/img'))
-    .pipe($.size({
-      showFiles: true,
-      title: "Images size after optimizing:"
-    }));
-});
-
-// Used for optimizing any new/changed images during the watch task
-// without the need of building whole jekyll
-gulp.task('images-rebuild', function() {
-  return gulp.src(['assets/img/**/*', '!*.svg'])
-    .pipe($.size({
-      showFiles: true,
-      title: "Images size before optimizing:"
-    }))
-    .pipe($.cache($.imagemin({
-      optimizationLevel: 1,
-      progressive: true,
-      interlaced: true
-    })))
-    .pipe(browserSync.reload({stream:true}))
-    .pipe(gulp.dest('_site/assets/img'))
-    .pipe($.size({
-      showFiles: true,
-      title: "Images size after optimizing:"
-    }));
-});
-
-// Cleans folders which contain assets provided by external libraries
-// and the _site folder that is generated by jekyll
-gulp.task('clean', function() {
-  return gulp.src(['_site', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/js/vendor/*', 'bower_components'], { read: false })
-    .pipe($.rimraf());
-});
-
-// Downloads dependencies listed in bower.json (Normalize, Bourbon, Neat and jQuery)
-gulp.task('downloadDeps', function() {
+gulp.task('depsDownload', function() {
   var stream = gulp.src('bower.json')
     .pipe($.install());
     return stream;
 });
 
-// Moves Normalize, Bourbon, Neat and jQuery to the correct path
-gulp.task('installDeps', ['downloadDeps'] ,function() {
+gulp.task('depsInstall', ['depsDownload'] ,function() {
   var cssStack = $.filter(['bourbon/**/*', 'neat/**/*', 'normalize.css/**/*']);
   var jquery = $.filter('jquery/dist/jquery.js');
   var stream = gulp.src('bower_components/**/*')
@@ -178,30 +29,125 @@ gulp.task('installDeps', ['downloadDeps'] ,function() {
 // Sass doesn't yet support importing css as sass files
 // https://github.com/sass/sass/issues/556
 // This task is needed for normalize to be properly imported into our project
-gulp.task('fixNormalize', ['installDeps'], function() {
+gulp.task('depsFix', ['depsInstall'], function() {
   var stream = gulp.src(['assets/css/1-vendor/normalize.css/normalize.css'])
     .pipe($.rename('_normalize.scss'))
     .pipe(gulp.dest('assets/css/1-vendor/normalize.css'));
     return stream;
 });
 
-// Watches for any changes in the html/markdown/scss/js files and images
-// and runs relevant task
-gulp.task('watch', function() {
-  gulp.watch('assets/css/**/*.scss', ['sass-rebuild']);
-  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyll-build', 'htmlMinify', 'sass', 'scripts', 'images']);
-  gulp.watch('assets/js/*.js', ['scripts-rebuild']);
-  gulp.watch('assets/img/**/*', ['images-rebuild']);
+gulp.task('build', ['deps', 'jekyllBuild'], function() {});
+
+gulp.task('jekyllBuild', ['deps'], function(done) {
+  return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
 });
 
-// Task indended to use for the first time after cloning the repo
-// Downloads and installs required assets and runs the 'default' task
-gulp.task('build', ['downloadDeps', 'installDeps', 'fixNormalize'], function() {
-  gulp.start('default');
+gulp.task('watch', ['assets'], function() {
+  browserSync({
+    server: {
+      baseDir: '_site'
+    }
+  });
+  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyllRebuild', 'htmlMinify', 'copyAssets', browserSync.reload]);
+  gulp.watch('assets/css/**/*.scss', ['styles', browserSync.reload]);
+  gulp.watch('assets/js/*.js', ['scripts', browserSync.reload]);
+  gulp.watch('assets/img/**/*', ['images', browserSync.reload]);
 });
 
-// Builds jekyll, sass, scripts, images, sets up a working local server for a livereload-like environment
-// and watches for changes
-gulp.task('default', ['browser-sync'], function() {
-  gulp.start('watch');
+gulp.task('assets', ['styles', 'scripts', 'images'], function() {});
+
+// Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34.
+// New version of gulp-ruby-sass containing an option for disabling sourcemaps generation 
+// https://github.com/sindresorhus/gulp-ruby-sass/commit/a578544f31f40fbda7964648dccb14d2b6ddf01e
+// hasn't been yet released
+gulp.task('styles', function() {
+  return gulp.src('assets/css/main.scss')
+    .pipe($.rubySass({
+      style: 'expanded',
+      precision: 3
+    }))
+    .pipe($.autoprefixer({
+      browsers: ['last 2 versions']
+    }))
+    .pipe($.minifyCss())
+    .pipe(gulp.dest('assets/dist/css'))
+    .pipe(gulp.dest('_site/assets/css'));
 });
+
+gulp.task('scripts', function() {
+  var vendor = $.filter('vendor/**/*.js');
+  var custom = $.filter(['*.js', '!vendor.min.js']);
+
+  return gulp.src('assets/js/**/*.js')
+    .pipe(vendor)
+    .pipe($.concat('vendor.min.js'))
+    .pipe($.uglify())
+    .pipe(vendor.restore())
+    .pipe(custom)
+    .pipe($.jshint())
+    .pipe($.jshint.reporter('jshint-stylish'))
+    .pipe($.concat('main.min.js'))
+    .pipe($.uglify())
+    .pipe(custom.restore())
+    .pipe(gulp.dest('assets/dist/js'))
+    .pipe(gulp.dest('_site/assets/js'));
+});
+
+// Due to a limitation (https://github.com/svg/svgo/issues/225) in sax-js, which is used by svgo to optimize .svg files,
+// .svg files are excluded from being optimized here. You can manually delete problematic AI-related entities
+// from your .svg file, change the third line below to  `` return gulp.src('assets/img/**/*') `` 
+gulp.task('images', function() {
+  return gulp.src(['assets/img/**/*', '!*.svg'])
+    .pipe($.size({
+      showFiles: true,
+      title: "Images size before optimizing:"
+    }))
+    .pipe($.cache($.imagemin({
+      optimizationLevel: 1,
+      progressive: true,
+      interlaced: true
+    })))
+    .pipe(gulp.dest('assets/dist/img'))
+    .pipe(gulp.dest('_site/assets/img'))
+    .pipe($.size({
+      showFiles: true,
+      title: "Images size after optimizing:"
+    }));
+});
+
+gulp.task('browserSync', function() {
+  browserSync({
+    server: {
+      baseDir: '_site'
+    }
+  });
+});
+
+gulp.task('jekyllRebuild', function(done) {
+  return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
+});
+
+gulp.task('htmlMinify', ['jekyllRebuild'], function() {
+  var stream = gulp.src('_site/**/*.html')
+    .pipe($.htmlmin({collapseWhitespace: true}))
+    .pipe(gulp.dest('_site/'));
+  return stream;
+});
+
+gulp.task('copyAssets', ['htmlMinify'] ,function () {
+  var css = gulp.src('assets/dist/css/main.css')
+    .pipe(gulp.dest('_site/assets/css'));
+  var js = gulp.src(['assets/dist/js/vendor.min.js', 'assets/dist/js/main.min.js'])
+    .pipe(gulp.dest('_site/assets/js'));
+  var img = gulp.src('assets/dist/img*')
+    .pipe(gulp.dest('_site/assets/img'));
+  return merge(css, js, img);
+});
+
+gulp.task('clean', function() {
+  return gulp.src(['_site', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/css/main.css', 'assets/css/main.css.map', 'assets/js/vendor/*', 'assets/js/main.min.js', 'assets/js/vendor.min.js', 'assets/dist', 'bower_components'], { read: false })
+    .pipe($.rimraf());
+});
+
+// Just in case someone forgets to add ``watch`` to ``$ gulp``
+gulp.task('default', ['watch'], function() {});
