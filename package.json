@@ -1,6 +1,6 @@
 {
   "name": "bourbonify-jekyll",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "Simple boilerplate for quickly setting up Jekyll with Normalize, Bourbon and Neat.",
   "main": "gulpfile.js",
   "author": "Andrzej Kłapeć",
