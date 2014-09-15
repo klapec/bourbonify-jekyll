@@ -1,10 +1,14 @@
 .site-footer {
-  border-top: 1px solid $light-gray;
-  padding: $gutter 0;
-  font-size: 15px;
-  color: $medium-gray;
   @include span-columns(12);
-  // @include row(table);
+  @include omega();
+  border-top: 1px solid $light-gray;
+  color: $medium-gray;
+  font-size: 15px;
+  padding-top: $gutter;
+
+  div {
+    overflow: hidden;
+  }
 }
 
 .footer-heading {
@@ -12,37 +16,24 @@
   margin-bottom: $gutter / 2;
 }
 
-.contact-list,
-.social-media-list {
-  list-style: none;
-  margin-left: 0;
-}
-
-.social-icon {
-  > svg {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
-    
-    path {
-      fill: $medium-gray;
-    }
-  }
-}
-
 .footer-details-site {
   @include span-columns(4 of 12);
-  @include pad();
+  @include media($small) {
+    @include span-columns(4)
+  }
 }
 
 .footer-details-social {
   @include span-columns(4 of 12);
   @include pad();
+  @include media($small) {
+    @include span-columns(4)
+  }
 }
 
 .footer-details-description {
   @include span-columns(4 of 12);
-  @include reset-display;
-  @include pad();
+  @include media($small) {
+    @include span-columns(4)
+  }
 }

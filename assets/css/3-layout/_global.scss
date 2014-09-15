@@ -1,13 +1,15 @@
 .wrapper {
-  @include outer-container;
+  @include outer-container();
   border-top: 5px solid $dark-gray;
   padding: 1em;
 }
 
 .page-content {
-  margin-top: $gutter;
+  @include span-columns(12);
+  @include omega();
+  padding-top: $gutter;
 
   h1 {
     line-height: 1em;
-  }
+  };
 }

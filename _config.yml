@@ -1,9 +1,9 @@
 # Site settings
-title: "jekyll-bourbonify"
+title: "bourbonify-jekyll"
 email: your-email@domain.com
-description: "Simple boilerplate allowing to quickly set up Jekyll with Normalize, Bourbon and Neat."
+description: "Simple boilerplate for quickly setting up Jekyll with Normalize, Bourbon and Neat."
 
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://yourdomain.com" # the base hostname & protocol for your site
 
-exclude: ['node_modules', 'package.json', 'gulpfile.js', 'jekyll-bourbonify.sublime-project', 'jekyll-bourbonify.sublime-workspace', '.bowerrc', 'bower.json', 'assets', 'LICENSE', 'README.md', 'bower_components'] # recommended not to remove anything from this line
+exclude: ['node_modules', 'package.json', 'gulpfile.js', 'bourbonify-jekyll.sublime-project', 'bourbonify-jekyll.sublime-workspace', '.bowerrc', 'bower.json', 'assets', 'LICENSE', 'README.md', 'bower_components'] # recommended not to remove anything from this line

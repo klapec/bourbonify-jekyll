@@ -9,15 +9,11 @@
 // $default-feature:  // Default @media feature for the breakpoint() mixin, default: min-width;
 // $default-layout-direction:  // Left-to-right or Right-to-left layout direction, default: LTR;
 
-// Neat Breakpoints
-// $medium-screen: em(640);
-// $large-screen: em(860);
+$small: new-breakpoint(max-width 768px 4);
+$medium: new-breakpoint(min-width 768px 8);
+$large: new-breakpoint(min-breakpoint 1024px 12);
 
-// $medium-screen-up: new-breakpoint(min-width $medium-screen 4);
-// $large-screen-up: new-breakpoint(min-width $large-screen 8);
-
-// Visual Grid
-// $visual-grid:  // Display the base grid helper, default: false;
+// $visual-grid: true; // Display the base grid helper, default: false;
 // $visual-grid-color: // Default: #EEE;
 // $visual-grid-index:  // Show grid behind content (back) or overlay it over the content (front), default: back;
 // $visual-grid-opacity:  // Default: 0.4;
@@ -26,15 +22,10 @@
 
 
 // COLORS
-// Feel free to change them and add more!
-
 $blue: #477DCA;
 $dark-gray: #333;
 $medium-gray: #999;
 $light-gray: #DDD;
-$light-red: #FBE3E4;
-$light-yellow: #FFF6BF;
-$light-green: #E6EFC2;
 
 // Background Color
 $base-background-color: white;
@@ -52,39 +43,10 @@ $hover-button-color: $hover-link-color;
 // Border color
 $base-border-color: $light-gray;
 
-// Flash Colors
-$alert-color: $light-yellow;
-$error-color: $light-red;
-$notice-color: $light-yellow;
-$success-color: $light-green;
-
-
-
-// TYPOGRAPHY
-// Basic settings for typography, using Bourbon font-family addon
-
-$sans-serif: $helvetica;
-$serif: $georgia;
-$base-font-family: $sans-serif;
-$header-font-family: $base-font-family;
-
 
 
 // SIZES
 $base-font-size: 1em;
 $base-line-height: $base-font-size * 1.5;
-$unitless-line-height: $base-line-height / ($base-line-height * 0 + 1); // Strip units from line-height: https://developer.mozilla.org/en-US/docs/Web/CSS/line-height#Prefer_unitless_numbers_for_line-height_values
+$unitless-line-height: $base-line-height / ($base-line-height * 0 + 1);
 $header-line-height: $base-font-size * 1.25;
-$base-border-radius: em(3);
-
-
-
-// FORMS
-$form-border-color: $base-border-color;
-$form-border-color-hover: darken($base-border-color, 10);
-$form-border-color-focus: $base-accent-color;
-$form-border-radius: $base-border-radius;
-$form-box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-$form-box-shadow-focus: $form-box-shadow, 0 0 5px rgba(darken($form-border-color-focus, 5), 0.7);
-$form-font-size: $base-font-size;
-$form-font-family: $base-font-family;

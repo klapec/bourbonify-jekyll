@@ -1,3 +1,10 @@
+// Basic settings for typography, using Bourbon font-family addon
+$sans-serif: $helvetica;
+$serif: $georgia;
+$base-font-family: $sans-serif;
+$header-font-family: $base-font-family;
+
+
 body {
   -webkit-font-smoothing: antialiased;
   background-color: $base-background-color;
@@ -11,35 +18,31 @@ h1, h2, h3, h4, h5, h6 {
   font-family: $header-font-family;
   line-height: $header-line-height;
   margin: 0;
-  text-rendering: optimizeLegibility; // Fix the character spacing for headings
+  text-rendering: optimizeLegibility;
 }
 
 h1 {
-  font-size: $base-font-size * 2.25; // 16 * 2.25 = 36px
+  font-size: $base-font-size * 2.5;
 }
 
 h2 {
-  font-size: $base-font-size * 2; // 16 * 2 = 32px
+  font-size: $base-font-size * 2.25;
 }
 
 h3 {
-  font-size: $base-font-size * 1.75; // 16 * 1.75 = 28px
+  font-size: $base-font-size * 2;
 }
 
 h4 {
-  font-size: $base-font-size * 1.5; // 16 * 1.5 = 24px
+  font-size: $base-font-size * 1.75;
 }
 
 h5 {
-  font-size: $base-font-size * 1.25; // 16 * 1.25 = 20px
+  font-size: $base-font-size * 1.5;
 }
 
 h6 {
-  font-size: $base-font-size;
-}
-
-p {
-  margin: 0 0 ($base-line-height * .5);
+  font-size: $base-font-size * 1.25;
 }
 
 a {
@@ -54,34 +57,5 @@ a {
   &:active, &:focus {
     color: $hover-link-color;
     outline: none;
-  }
-}
-
-hr {
-  border-bottom: 1px solid $base-border-color;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-  margin: $base-line-height 0;
-}
-
-img {
-  margin: 0;
-  max-width: 100%;
-}
-
-blockquote {
-  border-left: 2px solid $base-border-color;
-  color: lighten($base-font-color, 15);
-  margin: $base-line-height 0;
-  padding-left: $base-line-height / 2;
-}
-
-cite {
-  color: lighten($base-font-color, 25);
-  font-style: italic;
-
-  &:before {
-    content: '\2014 \00A0';
   }
 }

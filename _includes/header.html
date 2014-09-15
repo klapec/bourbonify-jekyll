@@ -1,8 +1,10 @@
 <header class="site-header">
   <a class="site-title" href="{{ site.baseurl }}/">{{ site.title }}</a>
   <nav class="site-nav">
+      <ul>
       {% for page in site.pages %}{% if page.title %}
-      <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+        <li class="page-link"><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
       {% endif %}{% endfor %}
+      </ul>
   </nav>
 </header>

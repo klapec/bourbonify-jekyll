@@ -50,11 +50,11 @@ gulp.task('watch', ['assets'], function() {
   });
   gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyllRebuild', 'htmlMinify', 'copyAssets', browserSync.reload]);
   gulp.watch('assets/css/**/*.scss', ['styles', browserSync.reload]);
-  gulp.watch('assets/js/*.js', ['scripts', browserSync.reload]);
-  gulp.watch('assets/img/**/*', ['images', browserSync.reload]);
+  // gulp.watch('assets/js/*.js', ['scripts', browserSync.reload]);
 });
 
-gulp.task('assets', ['styles', 'scripts', 'images'], function() {});
+// Change to ``gulp.task('assets', ['styles', 'images', 'scripts'], function() {});`` if you want to have your js scripts included in the project
+gulp.task('assets', ['styles', 'images'], function() {});
 
 // Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34.
 // New version of gulp-ruby-sass containing an option for disabling sourcemaps generation 
@@ -93,26 +93,24 @@ gulp.task('scripts', function() {
     .pipe(gulp.dest('_site/assets/js'));
 });
 
-// Due to a limitation (https://github.com/svg/svgo/issues/225) in sax-js, which is used by svgo to optimize .svg files,
-// .svg files are excluded from being optimized here. You can manually delete problematic AI-related entities
-// from your .svg file, change the third line below to  `` return gulp.src('assets/img/**/*') `` 
+// Image optimization part of the 'images' task has been disabled. This is due to the size of the ``gulp-imagemin`` plugin which is used for this and the fact that it is not neccessarily needed for everyone by default. If you want to reenable it - uncomment those few lines before. Remember to delete the semicolon from line ``.pipe(gulp.dest('_site/assets/img'))``.
 gulp.task('images', function() {
-  return gulp.src(['assets/img/**/*', '!*.svg'])
-    .pipe($.size({
-      showFiles: true,
-      title: "Images size before optimizing:"
-    }))
-    .pipe($.cache($.imagemin({
-      optimizationLevel: 1,
-      progressive: true,
-      interlaced: true
-    })))
+  return gulp.src('assets/img/**/*')
+    // .pipe($.size({
+    //   showFiles: true,
+    //   title: "Images size before optimizing:"
+    // }))
+    // .pipe($.cache($.imagemin({
+    //   optimizationLevel: 1,
+    //   progressive: true,
+    //   interlaced: true
+    // })))
     .pipe(gulp.dest('assets/dist/img'))
-    .pipe(gulp.dest('_site/assets/img'))
-    .pipe($.size({
-      showFiles: true,
-      title: "Images size after optimizing:"
-    }));
+    .pipe(gulp.dest('_site/assets/img'));
+    // .pipe($.size({
+    //   showFiles: true,
+    //   title: "Images size after optimizing:"
+    // }));
 });
 
 gulp.task('browserSync', function() {
@@ -141,7 +139,7 @@ gulp.task('copyAssets', ['htmlMinify'] ,function () {
     .pipe(gulp.dest('_site/assets/js'));
   var img = gulp.src('assets/dist/img*')
     .pipe(gulp.dest('_site/assets/img'));
-  return merge(css, js, img);
+  return merge(css, js);
 });
 
 gulp.task('clean', function() {

@@ -1,5 +1,9 @@
 .sass-cache
 node_modules
 bower_components
-jekyll-bourbonify.sublime-project
-jekyll-bourbonify.sublime-workspace
+bourbonify-jekyll.sublime-project
+bourbonify-jekyll.sublime-workspace
+_site
+assets/css/1-vendor
+assets/dist
+assets/js/vendor
