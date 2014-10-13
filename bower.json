@@ -7,7 +7,7 @@
   "homepage": "http://github.com/klapec/jekyll-bourbonify",
   "private": true,
   "dependencies": {
-    "normalize.css": "~3.0.1",
+    "normalize.css": "~3.0.2",
     "bourbon": "~4.0.2",
     "neat": "~1.6.0",
     "jquery": "~2.1.1"
