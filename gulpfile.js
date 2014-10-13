@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var cp = require('child_process');
 var browserSync = require('browser-sync');
+var del = require('del');
 var jshintStylish = require('jshint-stylish');
 var merge = require('merge-stream');
 var $ = require('gulp-load-plugins')();
@@ -143,8 +144,7 @@ gulp.task('copyAssets', ['htmlMinify'] ,function () {
 });
 
 gulp.task('clean', function() {
-  return gulp.src(['_site', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/css/main.css', 'assets/css/main.css.map', 'assets/js/vendor/*', 'assets/js/main.min.js', 'assets/js/vendor.min.js', 'assets/dist', 'bower_components'], { read: false })
-    .pipe($.rimraf());
+  return del(['_site', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/css/main.css', 'assets/css/main.css.map', 'assets/js/vendor/*', 'assets/js/main.min.js', 'assets/js/vendor.min.js', 'assets/dist', 'bower_components'], { read: false });
 });
 
 // Just in case someone forgets to add ``watch`` to ``$ gulp``
