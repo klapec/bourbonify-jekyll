@@ -1,15 +1,64 @@
-var gulp = require('gulp');
-var cp = require('child_process');
-var browserSync = require('browser-sync');
-var del = require('del');
+var gulp          = require('gulp');
+var gutil         = require('gulp-util');
+var cp            = require('child_process');
+var browserSync   = require('browser-sync');
+var del           = require('del');
 var jshintStylish = require('jshint-stylish');
-var merge = require('merge-stream');
-var $ = require('gulp-load-plugins')();
+var merge         = require('merge-stream');
+var $             = require('gulp-load-plugins')();
 
-gulp.task('deps', ['depsDownload', 'depsInstall', 'depsFix'], function() {});
+var basePath = {
+  src   : 'assets/src/',
+  dest  : 'assets/public/'
+};
+
+var sitePath = {
+  dest  : '_site/assets/'
+};
+
+var srcAssets = {
+  markup        : '*.html',
+  styles        : basePath.src + 'stylesheets/',
+  scripts       : basePath.src + 'scripts/',
+  vendorScripts : basePath.src + 'scripts/vendor/',
+  images        : basePath.src + 'images/**/*'
+};
+
+var destAssets = {
+  styles        : basePath.dest + 'stylesheets/',
+  scripts       : basePath.dest + 'scripts/',
+  vendorScripts : basePath.dest + 'scripts/',
+  images        : basePath.dest + 'images/'
+};
+
+var siteAssets = {
+  styles        : sitePath.dest + 'stylesheets/',
+  scripts       : sitePath.dest + 'scripts/',
+  vendorScripts : sitePath.dest + 'scripts/',
+  images        : sitePath.dest + 'images/'
+};
+
+function errorAlert(err) {
+  $.notify.onError({
+    title: "Gulp Error",
+    message: "Check your terminal",
+    sound: "Basso"
+  })(err);
+  gutil.log(gutil.colors.red(err.toString()));
+  this.emit("end");
+}
+
+gulp.task('deps', ['depsDownload', 'depsInstall', 'depsFix'], function() {
+  $.notify({
+      title: "Dependencies installed",
+      message: "<%= file.relative %>",
+      sound: "Glass"
+  });
+});
 
 gulp.task('depsDownload', function() {
   var stream = gulp.src('bower.json')
+    .pipe($.plumber({errorHandler: errorAlert}))
     .pipe($.install());
     return stream;
 });
@@ -18,22 +67,21 @@ gulp.task('depsInstall', ['depsDownload'] ,function() {
   var cssStack = $.filter(['bourbon/**/*', 'neat/**/*', 'normalize.css/**/*']);
   var jquery = $.filter('jquery/dist/jquery.js');
   var stream = gulp.src('bower_components/**/*')
+    .pipe($.plumber({errorHandler: errorAlert}))
     .pipe(cssStack)
-    .pipe(gulp.dest('assets/css/1-vendor'))
+    .pipe(gulp.dest(srcAssets.styles + 'vendor'))
     .pipe(cssStack.restore())
     .pipe(jquery)
-    .pipe(gulp.dest('assets/js/vendor'))
+    .pipe(gulp.dest(srcAssets.scripts + 'vendor'))
     .pipe(jquery.restore());
     return stream;
 });
 
-// Sass doesn't yet support importing css as sass files
-// https://github.com/sass/sass/issues/556
-// This task is needed for normalize to be properly imported into our project
 gulp.task('depsFix', ['depsInstall'], function() {
-  var stream = gulp.src(['assets/css/1-vendor/normalize.css/normalize.css'])
-    .pipe($.rename('_normalize.scss'))
-    .pipe(gulp.dest('assets/css/1-vendor/normalize.css'));
+  var stream = gulp.src([srcAssets.styles + 'vendor/normalize.css/normalize.css'])
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.rename('normalize.scss'))
+    .pipe(gulp.dest(srcAssets.styles + 'vendor/normalize.css'));
     return stream;
 });
 
@@ -43,75 +91,89 @@ gulp.task('jekyllBuild', ['deps'], function(done) {
   return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
 });
 
-gulp.task('watch', ['assets'], function() {
+gulp.task('default', ['assets'], function() {
   browserSync({
     server: {
       baseDir: '_site'
     }
   });
-  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md'], ['jekyllRebuild', 'htmlMinify', 'copyAssets', browserSync.reload]);
-  gulp.watch('assets/css/**/*.scss', ['styles', browserSync.reload]);
-  // gulp.watch('assets/js/*.js', ['scripts', browserSync.reload]);
+  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md', '_config.yml'], ['jekyllRebuild', 'copyAssets', browserSync.reload]);
+  gulp.watch(srcAssets.styles + '**/*.scss', ['styles', browserSync.reload]);
+  gulp.watch(srcAssets.scripts + '*.js', ['scripts', browserSync.reload]);
+  gulp.watch(srcAssets.vendorScripts + '**/*.js', ['vendorScripts', browserSync.reload]);
+  gulp.watch(srcAssets.images, ['images', browserSync.reload]);
 });
 
-// Change to ``gulp.task('assets', ['styles', 'images', 'scripts'], function() {});`` if you want to have your js scripts included in the project
-gulp.task('assets', ['styles', 'images'], function() {});
+gulp.task('assets', ['styles', 'scripts', 'vendorScripts', 'images'], function() {});
 
-// Sourcemaps don't work yet because of https://github.com/jonathanepollack/gulp-minify-css/issues/34.
-// New version of gulp-ruby-sass containing an option for disabling sourcemaps generation 
-// https://github.com/sindresorhus/gulp-ruby-sass/commit/a578544f31f40fbda7964648dccb14d2b6ddf01e
-// hasn't been yet released
 gulp.task('styles', function() {
-  return gulp.src('assets/css/main.scss')
-    .pipe($.rubySass({
-      style: 'expanded',
-      precision: 3
+  return gulp.src(srcAssets.styles + 'main.scss')
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.sass({
+      precision: 6
     }))
     .pipe($.autoprefixer({
       browsers: ['last 2 versions']
     }))
     .pipe($.minifyCss())
-    .pipe(gulp.dest('assets/dist/css'))
-    .pipe(gulp.dest('_site/assets/css'));
+    .pipe($.rename({
+      suffix: ".min"
+    }))
+    .pipe(gulp.dest(destAssets.styles))
+    .pipe(gulp.dest(siteAssets.styles))
+    .pipe($.notify({
+        title: "Stylesheets recompiled",
+        message: "<%= file.relative %>",
+        sound: "Glass"
+    }));
 });
 
 gulp.task('scripts', function() {
-  var vendor = $.filter('vendor/**/*.js');
-  var custom = $.filter(['*.js', '!vendor.min.js']);
-
-  return gulp.src('assets/js/**/*.js')
-    .pipe(vendor)
-    .pipe($.concat('vendor.min.js'))
-    .pipe($.uglify())
-    .pipe(vendor.restore())
-    .pipe(custom)
+  return gulp.src(srcAssets.scripts + '*.js')
+    .pipe($.plumber({errorHandler: errorAlert}))
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
     .pipe($.concat('main.min.js'))
     .pipe($.uglify())
-    .pipe(custom.restore())
-    .pipe(gulp.dest('assets/dist/js'))
-    .pipe(gulp.dest('_site/assets/js'));
+    .pipe(gulp.dest(destAssets.scripts))
+    .pipe(gulp.dest(siteAssets.scripts))
+    .pipe($.notify({
+        title: "Scripts recompiled",
+        message: "<%= file.relative %>",
+        sound: "Glass"
+    }));
 });
 
-// Image optimization part of the 'images' task has been disabled. This is due to the size of the ``gulp-imagemin`` plugin which is used for this and the fact that it is not neccessarily needed for everyone by default. If you want to reenable it - uncomment those few lines before. Remember to delete the semicolon from line ``.pipe(gulp.dest('_site/assets/img'))``.
+gulp.task('vendorScripts', function() {
+  return gulp.src(srcAssets.vendorScripts + '**/*.js')
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.concat('vendor.min.js'))
+    .pipe($.uglify())
+    .pipe(gulp.dest(destAssets.vendorScripts))
+    .pipe(gulp.dest(siteAssets.vendorScripts))
+    .pipe($.notify({
+        title: "Vendor scripts recompiled",
+        message: "<%= file.relative %>",
+        sound: "Glass"
+    }));
+});
+
 gulp.task('images', function() {
-  return gulp.src('assets/img/**/*')
-    // .pipe($.size({
-    //   showFiles: true,
-    //   title: "Images size before optimizing:"
-    // }))
-    // .pipe($.cache($.imagemin({
-    //   optimizationLevel: 1,
-    //   progressive: true,
-    //   interlaced: true
-    // })))
-    .pipe(gulp.dest('assets/dist/img'))
-    .pipe(gulp.dest('_site/assets/img'));
-    // .pipe($.size({
-    //   showFiles: true,
-    //   title: "Images size after optimizing:"
-    // }));
+  return gulp.src(srcAssets.images)
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.changed(destAssets.images))
+    .pipe($.imagemin({
+      optimizationLevel: 1,
+      progressive: true,
+      interlaced: true
+    }))
+    .pipe(gulp.dest(destAssets.images))
+    .pipe(gulp.dest(siteAssets.images))
+    .pipe($.notify({
+        title: "Images optimized",
+        message: "<%= file.relative %>",
+        sound: "Glass"
+    }));
 });
 
 gulp.task('browserSync', function() {
@@ -126,26 +188,18 @@ gulp.task('jekyllRebuild', function(done) {
   return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
 });
 
-gulp.task('htmlMinify', ['jekyllRebuild'], function() {
-  var stream = gulp.src('_site/**/*.html')
-    .pipe($.htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest('_site/'));
-  return stream;
-});
-
-gulp.task('copyAssets', ['htmlMinify'] ,function () {
-  var css = gulp.src('assets/dist/css/main.css')
-    .pipe(gulp.dest('_site/assets/css'));
-  var js = gulp.src(['assets/dist/js/vendor.min.js', 'assets/dist/js/main.min.js'])
-    .pipe(gulp.dest('_site/assets/js'));
-  var img = gulp.src('assets/dist/img*')
-    .pipe(gulp.dest('_site/assets/img'));
-  return merge(css, js);
+gulp.task('copyAssets', ['jekyllRebuild'] ,function () {
+  var css = gulp.src(destAssets.styles + 'main.min.css')
+    .pipe(gulp.dest(siteAssets.styles));
+  var js = gulp.src(destAssets.scripts + 'main.min.js')
+    .pipe(gulp.dest(siteAssets.scripts));
+  var vendorJs = gulp.src(destAssets.scripts + 'vendor.min.js')
+    .pipe(gulp.dest(siteAssets.scripts));
+  var img = gulp.src(destAssets.images + '**/*')
+    .pipe(gulp.dest(siteAssets.images));
+  return merge(css, js, vendorJs, img);
 });
 
 gulp.task('clean', function() {
-  return del(['_site', 'assets/css/1-vendor/*', '!assets/css/1-vendor/_1-dir.scss', 'assets/css/main.css', 'assets/css/main.css.map', 'assets/js/vendor/*', 'assets/js/main.min.js', 'assets/js/vendor.min.js', 'assets/dist', 'bower_components'], { read: false });
+  return del(['_site', 'assets/public/*', 'assets/src/stylesheets/vendor/*', 'assets/src/scripts/vendor/*', 'bower_components'], { read: false });
 });
-
-// Just in case someone forgets to add ``watch`` to ``$ gulp``
-gulp.task('default', ['watch'], function() {});

@@ -1,9 +1,2 @@
 .sass-cache
 node_modules
-bower_components
-bourbonify-jekyll.sublime-project
-bourbonify-jekyll.sublime-workspace
-_site
-assets/css/1-vendor
-assets/dist
-assets/js/vendor
