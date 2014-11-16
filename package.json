@@ -4,7 +4,7 @@
   "description": "Simple boilerplate for quickly setting up Jekyll with Normalize, Bourbon and Neat.",
   "main": "gulpfile.js",
   "author": "Andrzej Kłapeć",
-  "repository": "https://klapec@bitbucket.org/klapec/bourbonify-jekyll.git",
+  "repository": "https://github.com/klapec/bourbonify-jekyll.git",
   "license": "MIT",
   "devDependencies": {
     "browser-sync": "^1.6.1",
