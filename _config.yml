@@ -1,9 +1,18 @@
-# Site settings
 title: "bourbonify-jekyll"
+author: "Andrzej Kłapeć"
 email: your-email@domain.com
+keywords: "comma, separated, keywords"
 description: "Simple boilerplate for quickly setting up Jekyll with Normalize, Bourbon and Neat."
 
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://yourdomain.com" # the base hostname & protocol for your site
+url: "http://github.com/klapec" # the base hostname & protocol for your site
 
-exclude: ['node_modules', 'package.json', 'gulpfile.js', '.bowerrc', 'bower.json', 'assets', 'LICENSE', 'README.md', 'bower_components'] # recommended not to remove anything from this line
+markdown: redcarpet
+redcarpet:
+  extensions: ["smart", "autolink", "tables", "no_intra_emphasis", "strikethrough", "underline", "quote", "footnotes"]
+
+exclude: ['assets/src', 'node_modules', 'package.json', 'gulpfile.js', 'LICENSE', 'README.md', 'bourbonify-jekyll.sublime-project', 'bower_components', 'bower.json']
+
+timezone: Europe/Warsaw
+
+permalink: none

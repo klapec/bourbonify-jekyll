@@ -1,2 +1,8 @@
 .sass-cache
 node_modules
+.DS_Store
+.gitignore
+_site
+bourbonify-jekyll.sublime-workspace
+bower_components
+assets/src/stylesheets/vendors/*

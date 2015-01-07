@@ -1,15 +1,29 @@
-@import 'vendor/normalize.css/normalize';
-@import 'vendor/bourbon/dist/bourbon';
-@import 'vendor/neat/app/assets/stylesheets/neat';
+/****************************************************
+*  Imports
+*/
 
+// Vendors
+@import 'vendors/normalize.css/normalize';
+@import 'vendors/bourbon/app/assets/stylesheets/bourbon';
+@import 'vendors/neat/app/assets/stylesheets/neat';
+
+// Utils
+
+// Base
 @import 'base/settings';
 @import 'base/base';
 @import 'base/typography';
 
+// Partials
+@import 'partials/global';
+@import 'partials/header';
+@import 'partials/footer';
+
+// Components
 @import 'components/lists';
 @import 'components/post';
 @import 'components/posts-list';
 
-@import 'layout/global';
-@import 'layout/header';
-@import 'layout/footer';
+// Pages
+
+// Themes

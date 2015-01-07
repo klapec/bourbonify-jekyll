@@ -4,38 +4,28 @@ var cp            = require('child_process');
 var browserSync   = require('browser-sync');
 var del           = require('del');
 var jshintStylish = require('jshint-stylish');
-var merge         = require('merge-stream');
+var sass          = require('gulp-ruby-sass');
 var $             = require('gulp-load-plugins')();
 
 var basePath = {
   src   : 'assets/src/',
-  dest  : 'assets/public/'
-};
-
-var sitePath = {
-  dest  : '_site/assets/'
+  dist  : 'assets/dist/'
 };
 
 var srcAssets = {
-  markup        : '*.html',
   styles        : basePath.src + 'stylesheets/',
   scripts       : basePath.src + 'scripts/',
-  vendorScripts : basePath.src + 'scripts/vendor/',
-  images        : basePath.src + 'images/**/*'
+  vendorScripts : basePath.src + 'scripts/vendors/',
+  images        : basePath.src + 'images/',
+  svg           : basePath.src + 'svg/'
 };
 
-var destAssets = {
-  styles        : basePath.dest + 'stylesheets/',
-  scripts       : basePath.dest + 'scripts/',
-  vendorScripts : basePath.dest + 'scripts/',
-  images        : basePath.dest + 'images/'
-};
-
-var siteAssets = {
-  styles        : sitePath.dest + 'stylesheets/',
-  scripts       : sitePath.dest + 'scripts/',
-  vendorScripts : sitePath.dest + 'scripts/',
-  images        : sitePath.dest + 'images/'
+var distAssets = {
+  styles        : basePath.dist + 'stylesheets/',
+  scripts       : basePath.dist + 'scripts/',
+  vendorScripts : basePath.dist + 'scripts/',
+  images        : basePath.dist + 'images/',
+  svg           : basePath.dist + 'svg/'
 };
 
 function errorAlert(err) {
@@ -48,12 +38,16 @@ function errorAlert(err) {
   this.emit("end");
 }
 
-gulp.task('deps', ['depsDownload', 'depsInstall', 'depsFix'], function() {
+gulp.task('deps', ['cleanDeps', 'depsDownload', 'depsInstall', 'depsFix'], function() {
   $.notify({
       title: "Dependencies installed",
       message: "<%= file.relative %>",
       sound: "Glass"
   });
+});
+
+gulp.task('cleanDeps', function () {
+  return del(['assets/src/stylesheets/vendors/*', 'assets/src/scripts/vendors/*', 'bower_components'], { read: false });
 });
 
 gulp.task('depsDownload', function() {
@@ -64,24 +58,17 @@ gulp.task('depsDownload', function() {
 });
 
 gulp.task('depsInstall', ['depsDownload'] ,function() {
-  var cssStack = $.filter(['bourbon/**/*', 'neat/**/*', 'normalize.css/**/*']);
-  var jquery = $.filter('jquery/dist/jquery.js');
   var stream = gulp.src('bower_components/**/*')
     .pipe($.plumber({errorHandler: errorAlert}))
-    .pipe(cssStack)
-    .pipe(gulp.dest(srcAssets.styles + 'vendor'))
-    .pipe(cssStack.restore())
-    .pipe(jquery)
-    .pipe(gulp.dest(srcAssets.scripts + 'vendor'))
-    .pipe(jquery.restore());
+    .pipe(gulp.dest(srcAssets.styles + 'vendors'))
     return stream;
 });
 
 gulp.task('depsFix', ['depsInstall'], function() {
-  var stream = gulp.src([srcAssets.styles + 'vendor/normalize.css/normalize.css'])
+  var stream = gulp.src([srcAssets.styles + 'vendors/normalize.css/normalize.css'])
     .pipe($.plumber({errorHandler: errorAlert}))
-    .pipe($.rename('normalize.scss'))
-    .pipe(gulp.dest(srcAssets.styles + 'vendor/normalize.css'));
+    .pipe($.rename('_normalize.scss'))
+    .pipe(gulp.dest(srcAssets.styles + 'vendors/normalize.css'));
     return stream;
 });
 
@@ -91,36 +78,37 @@ gulp.task('jekyllBuild', ['deps'], function(done) {
   return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
 });
 
-gulp.task('default', ['assets'], function() {
+gulp.task('jekyllRebuild', function(done) {
+  return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
+});
+
+gulp.task('default', function() {
   browserSync({
     server: {
       baseDir: '_site'
-    }
+    },
+    notify: false
   });
-  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*.md', '_config.yml'], ['jekyllRebuild', 'copyAssets', browserSync.reload]);
-  gulp.watch(srcAssets.styles + '**/*.scss', ['styles', browserSync.reload]);
-  gulp.watch(srcAssets.scripts + '*.js', ['scripts', browserSync.reload]);
-  gulp.watch(srcAssets.vendorScripts + '**/*.js', ['vendorScripts', browserSync.reload]);
-  gulp.watch(srcAssets.images, ['images', browserSync.reload]);
+  gulp.watch(['*.html', '*.md', '_layouts/*.html', '_includes/*.html', '_posts/*', '_config.yml'], ['jekyllRebuild', browserSync.reload]);
+  gulp.watch(srcAssets.styles + '**/*', ['injectStyles']);
+  gulp.watch(srcAssets.scripts + '*', ['injectScripts']);
+  gulp.watch(srcAssets.vendorScripts + '**/*', ['injectVendorScripts']);
+  gulp.watch(srcAssets.images + '**/*', ['images', browserSync.reload]);
+  gulp.watch(srcAssets.svg + '**/*', ['svg', browserSync.reload]);
 });
 
-gulp.task('assets', ['styles', 'scripts', 'vendorScripts', 'images'], function() {});
-
-gulp.task('styles', function() {
-  return gulp.src(srcAssets.styles + 'main.scss')
+gulp.task('styles', ['cleanStyles'], function() {
+  return sass(srcAssets.styles)
     .pipe($.plumber({errorHandler: errorAlert}))
-    .pipe($.sass({
-      precision: 6
-    }))
     .pipe($.autoprefixer({
-      browsers: ['last 2 versions']
+      browsers: ['> 1%', 'last 2 versions', 'Firefox ESR', 'Android >= 4']
     }))
     .pipe($.minifyCss())
+    .pipe($.rev())
     .pipe($.rename({
       suffix: ".min"
     }))
-    .pipe(gulp.dest(destAssets.styles))
-    .pipe(gulp.dest(siteAssets.styles))
+    .pipe(gulp.dest(distAssets.styles))
     .pipe($.notify({
         title: "Stylesheets recompiled",
         message: "<%= file.relative %>",
@@ -128,15 +116,18 @@ gulp.task('styles', function() {
     }));
 });
 
-gulp.task('scripts', function() {
+gulp.task('scripts', ['cleanScripts'], function() {
   return gulp.src(srcAssets.scripts + '*.js')
     .pipe($.plumber({errorHandler: errorAlert}))
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.concat('main.min.js'))
+    .pipe($.concat('main.js'))
     .pipe($.uglify())
-    .pipe(gulp.dest(destAssets.scripts))
-    .pipe(gulp.dest(siteAssets.scripts))
+    .pipe($.rev())
+    .pipe($.rename({
+      suffix: ".min"
+    }))
+    .pipe(gulp.dest(distAssets.scripts))
     .pipe($.notify({
         title: "Scripts recompiled",
         message: "<%= file.relative %>",
@@ -144,13 +135,16 @@ gulp.task('scripts', function() {
     }));
 });
 
-gulp.task('vendorScripts', function() {
+gulp.task('vendorScripts', ['cleanVendorScripts'], function() {
   return gulp.src(srcAssets.vendorScripts + '**/*.js')
     .pipe($.plumber({errorHandler: errorAlert}))
-    .pipe($.concat('vendor.min.js'))
+    .pipe($.concat('vendors.js'))
     .pipe($.uglify())
-    .pipe(gulp.dest(destAssets.vendorScripts))
-    .pipe(gulp.dest(siteAssets.vendorScripts))
+    .pipe($.rev())
+    .pipe($.rename({
+      suffix: ".min"
+    }))
+    .pipe(gulp.dest(distAssets.vendorScripts))
     .pipe($.notify({
         title: "Vendor scripts recompiled",
         message: "<%= file.relative %>",
@@ -159,16 +153,14 @@ gulp.task('vendorScripts', function() {
 });
 
 gulp.task('images', function() {
-  return gulp.src(srcAssets.images)
+  return gulp.src(srcAssets.images + '**/*')
     .pipe($.plumber({errorHandler: errorAlert}))
-    .pipe($.changed(destAssets.images))
+    .pipe($.changed(distAssets.images))
     .pipe($.imagemin({
-      optimizationLevel: 1,
       progressive: true,
       interlaced: true
     }))
-    .pipe(gulp.dest(destAssets.images))
-    .pipe(gulp.dest(siteAssets.images))
+    .pipe(gulp.dest(distAssets.images))
     .pipe($.notify({
         title: "Images optimized",
         message: "<%= file.relative %>",
@@ -176,30 +168,71 @@ gulp.task('images', function() {
     }));
 });
 
-gulp.task('browserSync', function() {
-  browserSync({
-    server: {
-      baseDir: '_site'
-    }
-  });
+gulp.task('svg', function() {
+  return gulp.src(srcAssets.svg + '*')
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.changed(distAssets.svg))
+    .pipe($.imagemin())
+    .pipe($.svgstore({ fileName: 'sprite.svg', prefix: 'icon-' }))
+    .pipe(gulp.dest(distAssets.svg))
+    .pipe($.notify({
+        title: "SVGs optimized",
+        message: "<%= file.relative %>",
+        sound: "Glass"
+    }));
 });
 
-gulp.task('jekyllRebuild', function(done) {
-  return cp.spawn('jekyll', ['build'], {stdio: 'inherit'}).on('close', done);
+gulp.task('cleanAssets', ['cleanStyles', 'cleanScripts', 'cleanVendorScripts']);
+
+gulp.task('cleanStyles', function () {
+  return del('assets/dist/stylesheets/*.css', { read: false });
 });
 
-gulp.task('copyAssets', ['jekyllRebuild'] ,function () {
-  var css = gulp.src(destAssets.styles + 'main.min.css')
-    .pipe(gulp.dest(siteAssets.styles));
-  var js = gulp.src(destAssets.scripts + 'main.min.js')
-    .pipe(gulp.dest(siteAssets.scripts));
-  var vendorJs = gulp.src(destAssets.scripts + 'vendor.min.js')
-    .pipe(gulp.dest(siteAssets.scripts));
-  var img = gulp.src(destAssets.images + '**/*')
-    .pipe(gulp.dest(siteAssets.images));
-  return merge(css, js, vendorJs, img);
+gulp.task('cleanScripts', function () {
+  return del('assets/dist/scripts/main*', { read: false });
 });
 
-gulp.task('clean', function() {
-  return del(['_site', 'assets/public/*', 'assets/src/stylesheets/vendor/*', 'assets/src/scripts/vendor/*', 'bower_components'], { read: false });
+gulp.task('cleanVendorScripts', function () {
+  return del('assets/dist/scripts/vendors*', { read: false });
+});
+
+gulp.task('injectStyles', ['styles'], function () {
+  var target = gulp.src('_layouts/default.html');
+  var sources = gulp.src('assets/dist/stylesheets/*.css', {read: false});
+
+  return target
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.inject(sources, {
+      addPrefix: "{{ site.baseurl }}",
+      addRootSlash: false
+    }))
+    .pipe(gulp.dest('./_layouts'));
+});
+
+gulp.task('injectScripts', ['scripts'], function () {
+  var target = gulp.src('_layouts/default.html');
+  var sources = gulp.src('assets/dist/scripts/main*', {read: false});
+
+  return target
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.inject(sources, {
+      addPrefix: "{{ site.baseurl }}",
+      addRootSlash: false,
+      name: "script"
+    }))
+    .pipe(gulp.dest('./_layouts'));
+});
+
+gulp.task('injectVendorScripts', ['vendorScripts'], function () {
+  var target = gulp.src('_layouts/default.html');
+  var sources = gulp.src('assets/dist/scripts/vendors*', {read: false});
+
+  return target
+    .pipe($.plumber({errorHandler: errorAlert}))
+    .pipe($.inject(sources, {
+      addPrefix: "{{ site.baseurl }}",
+      addRootSlash: false,
+      name: "vendorScripts"
+    }))
+    .pipe(gulp.dest('./_layouts'));
 });

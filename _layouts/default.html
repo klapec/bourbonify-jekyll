@@ -1,9 +1,26 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-{% include head.html %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% if page.title %}{{ site.title }} - {{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
+    <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    <meta name="author" content="{{ site.author }}">
+    <meta name="keywords" content="{{ site.keywords }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:title" content="{% if page.title %}{{ site.title }} - {{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:url" content="{{ page.url | replace:'index.html','' | prepend: site.url }}">
+    <meta property="og:image" content="{{ site.baseurl }}/favicon-192x192.png">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="{{ page.url | prepend: site.url }}">
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{{ site.baseurl }}/assets/dist/stylesheets/main-92a05f0c.min.css">
+    <!-- endinject -->
+    <link rel="icon" type="image/png" href="{{ site.baseurl }}/favicon-192x192.png" sizes="192x192">
+  </head>
 <body>
   <div class="wrapper">
     {% include header.html %}
@@ -12,8 +29,6 @@
     </div>
     {% include footer.html %}
   </div>
-  <script type="text/javascript" src="/assets/scripts/main.min.js"></script>
-  <script type="text/javascript" src="/assets/scripts/vendor.min.js"></script>
   <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
   <!-- <script>
     (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
@@ -23,5 +38,11 @@
     r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
     ga('create','UA-XXXXX-X');ga('send','pageview');
   </script> -->
+  <script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+  <!-- vendorScripts:js -->
+  <!-- endinject -->
+  <!-- script:js -->
+  <script src="{{ site.baseurl }}/assets/dist/scripts/main-d41d8cd9.min.js"></script>
+  <!-- endinject -->
 </body>
 </html>
