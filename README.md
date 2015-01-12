@@ -32,6 +32,7 @@ There are few gulp tasks present in the gulpfile.
 - there's also a series of tasks that automatically inject paths to relevant assets into the ``default.html`` layout file. This is necessary because we are changing compiled assets' filenames each time they're rebuilt by appending a new revision hash. And because of this, we can use better browser caching (if the server is correctly set up).
 
 ## Directory tree
+```
 ├── _includes
 │   ├── footer.html
 │   └── header.html
@@ -86,3 +87,4 @@ There are few gulp tasks present in the gulpfile.
 ├── package.json
 ├── sample-page.md
 └── test-page.md
+```
